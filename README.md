@@ -1,2 +1,2 @@
 # sonarqube
-Sonarcube docker repo.
+Sonarqube docker repo.
