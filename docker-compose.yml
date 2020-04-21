@@ -1,9 +1,11 @@
 version: '3'
-
+networks:
+  default:
+    external:
+      name: qps-infra
 services:
   sonarqube:
-    image: qaprosoft/sonarqube:1.0
-    command: -Dsonar.web.context=/sonarqube
+    image: qaprosoft/sonarqube:${TAG_SONAR}
     volumes:
       - ./sonarqube/data:/opt/sonarqube/data
       - ./sonarqube/logs:/opt/sonarqube/logs
