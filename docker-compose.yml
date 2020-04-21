@@ -6,6 +6,7 @@ networks:
 services:
   sonarqube:
     image: qaprosoft/sonarqube:${TAG_SONAR}
+    command: -Dsonar.web.context=/sonarqube
     volumes:
       - ./sonarqube/data:/opt/sonarqube/data
       - ./sonarqube/logs:/opt/sonarqube/logs
