@@ -1,3 +1,3 @@
-FROM sonarqube:5.6.7-alpine
+FROM sonarqube:8.2-community
 
 COPY plugins/ /opt/sonarqube/extensions/plugins/

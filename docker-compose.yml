@@ -1,25 +1,17 @@
-version: '3'
-
+version: '3.7'
+networks:
+  default:
+    external:
+      name: qps-infra
 services:
-  db:
-    image: postgres:9.6
-    volumes:
-     - ./pgdata:/var/lib/postgresql/data
-     - ./initdb.d/:/docker-entrypoint-initdb.d
-    ports:
-     - "5433:5432"
-    environment:
-     - POSTGRES_USER=postgres
-     - POSTGRES_PASSWORD=postgres
   sonarqube:
-    image: qaprosoft/sonarqube:1.0
+    image: qaprosoft/sonarqube:${TAG_SONAR}
+    # https://jira.sonarsource.com/browse/SONAR-13272 bug with SONAR_WEB_CONTEXT env variable
+    command: -Dsonar.web.context=/sonarqube
+    volumes:
+      - ./sonarqube/data:/opt/sonarqube/data
+      - ./sonarqube/logs:/opt/sonarqube/logs
+      - ./sonarqube/extensions:/opt/sonarqube/extensions
     ports:
      - "9000:9000"
      - "9002:9002"
-    command: -Dsonar.web.context=/sonarqube
-    environment:
-     - SONARQUBE_JDBC_USERNAME=postgres
-     - SONARQUBE_JDBC_PASSWORD=postgres
-     - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/postgres
-    depends_on:
-     - "db"
