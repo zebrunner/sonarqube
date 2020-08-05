@@ -35,14 +35,14 @@
   backup() {
     if [[ ! -f ${BASEDIR}/.disabled ]]; then
       source ${BASEDIR}/.env
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "qaprosoft/sonarqube:${TAG_SONAR}" tar -czvf /opt/sonarqube/backup/sonarqube.tar.gz /opt/sonarqube/data /opt/sonarqube/extensions
+      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" tar -czvf /opt/sonarqube/backup/sonarqube.tar.gz /opt/sonarqube/data /opt/sonarqube/extensions
     fi
   }
 
   restore() {
     if [[ ! -f ${BASEDIR}/.disabled ]]; then
       source ${BASEDIR}/.env
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "qaprosoft/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
+      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
     fi
   }
 
