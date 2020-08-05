@@ -54,7 +54,8 @@ print_banner
 
 case "$1" in
     setup)
-        # do nothing as of now
+        # add rwx permissions for everyone to be able to generate backup file from inside docker container
+        chmod a+rwx ./backup
         ;;
     start)
 	start 
