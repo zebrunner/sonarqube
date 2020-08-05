@@ -53,6 +53,9 @@ cd ${BASEDIR}
 print_banner
 
 case "$1" in
+    setup)
+        # do nothing as of now
+        ;;
     start)
 	start 
         ;;
@@ -76,7 +79,7 @@ case "$1" in
         restore
         ;;
     *)
-        echo "Usage: ./zebrunner.sh start|stop|restart|down|shutdown|backup|restore"
+        echo "Usage: ./zebrunner.sh setup|start|stop|restart|down|shutdown|backup|restore"
         exit 1
         ;;
 esac
