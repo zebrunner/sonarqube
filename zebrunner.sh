@@ -39,6 +39,14 @@
     fi
   }
 
+  restore() {
+    if [[ ! -f ${BASEDIR}/.disabled ]]; then
+      source ${BASEDIR}/.env
+      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "qaprosoft/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
+    fi
+  }
+
+
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd ${BASEDIR}
 
@@ -51,6 +59,10 @@ case "$1" in
     stop)
         stop
         ;;
+    restart)
+        down
+        start
+        ;;
     down)
         down
         ;;
@@ -60,8 +72,11 @@ case "$1" in
     backup)
         backup
 	;;
+    restore)
+        restore
+        ;;
     *)
-        echo "Usage: ./zebrunner.sh start|stop|down|shutdown|backup|restore"
+        echo "Usage: ./zebrunner.sh start|stop|restart|down|shutdown|backup|restore"
         exit 1
         ;;
 esac
