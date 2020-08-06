@@ -1,9 +1,5 @@
 #!/bin/bash
 
-  print_banner() {
-    echo "Welcome to Zebrunner Sonarqube (Community Edition)"
-  }
-
   start() {
     docker network inspect infra >/dev/null 2>&1 || docker network create infra
     if [[ ! -f ${BASEDIR}/.disabled ]]; then
@@ -46,30 +42,28 @@
     fi
   }
 
-
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd ${BASEDIR}
-
-print_banner
-
-echo_help() {
-  echo "
+  echo_help() {
+    echo "
       Usage: ./zebrunner.sh [option]
 
       Flags:
           --help | -h    Print help
       Arguments:
-      	  start          Start container
-      	  stop           Stop and keep container
-      	  restart        Restart container
-      	  down           Stop and remove container
-      	  shutdown       Stop and remove container, clear volumes
-      	  backup         Backup container
-      	  restore        Restore container
+          start          Start container
+          stop           Stop and keep container
+          restart        Restart container
+          down           Stop and remove container
+          shutdown       Stop and remove container, clear volumes
+          backup         Backup container
+          restore        Restore container
 
       For more help join telegram channel https://t.me/qps_infra"
       exit 0
   }
+
+
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd ${BASEDIR}
 
 case "$1" in
     setup)
