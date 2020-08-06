@@ -52,6 +52,25 @@ cd ${BASEDIR}
 
 print_banner
 
+echo_help() {
+  echo "
+      Usage: ./zebrunner.sh [option]
+
+      Flags:
+          --help | -h    Print help
+      Arguments:
+      	  start          Start container
+      	  stop           Stop and keep container
+      	  restart        Restart container
+      	  down           Stop and remove container
+      	  shutdown       Stop and remove container, clear volumes
+      	  backup         Backup container
+      	  restore        Restore container
+
+      For more help join telegram channel https://t.me/qps_infra"
+      exit 0
+  }
+
 case "$1" in
     setup)
         # add rwx permissions for everyone to be able to generate backup file from inside docker container
@@ -79,8 +98,12 @@ case "$1" in
     restore)
         restore
         ;;
+    --help | -h)
+        echo_help
+        ;;
     *)
-        echo "Usage: ./zebrunner.sh setup|start|stop|restart|down|shutdown|backup|restore"
+        echo "Invalid option detected: $1"
+        echo_help
         exit 1
         ;;
 esac
