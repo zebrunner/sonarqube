@@ -102,7 +102,7 @@ case "$1" in
         echo_help
         ;;
     *)
-        echo "Invalin option was find!"
+        echo "Invalid option detected: $1"
         echo_help
         exit 1
         ;;
