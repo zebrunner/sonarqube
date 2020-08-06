@@ -102,7 +102,8 @@ case "$1" in
         echo_help
         ;;
     *)
-        echo "There's no such parameter. Try to call for help with next command: ./zebrunner.sh --help or ./zebrunner.sh -h"
+        echo "Invalin option was find!"
+        echo_help
         exit 1
         ;;
 esac
