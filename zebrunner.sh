@@ -63,7 +63,7 @@
 
   status() {
     source ${BASEDIR}/.env
-    echщ "Sonar container status:: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
+    echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
   }
 
 
