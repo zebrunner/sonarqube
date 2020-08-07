@@ -61,6 +61,11 @@
       exit 0
   }
 
+  status() {
+    source ${BASEDIR}/.env
+    echo "Status of container: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
+  }
+
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd ${BASEDIR}
@@ -91,6 +96,9 @@ case "$1" in
 	;;
     restore)
         restore
+        ;;
+    status)
+        status
         ;;
     --help | -h)
         echo_help
