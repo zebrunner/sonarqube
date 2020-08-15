@@ -1,45 +1,56 @@
 #!/bin/bash
 
   start() {
-    docker network inspect infra >/dev/null 2>&1 || docker network create infra
-    if [[ ! -f .disabled ]]; then
-      docker-compose --env-file .env -f docker-compose.yml up -d
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    docker network inspect infra >/dev/null 2>&1 || docker network create infra
+    docker-compose --env-file .env -f docker-compose.yml up -d
   }
 
   stop() {
-    # stop and keep container
-    if [[ ! -f .disabled ]]; then
-      docker-compose --env-file .env -f docker-compose.yml stop
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    docker-compose --env-file .env -f docker-compose.yml stop
   }
 
   down() {
-    # stop and remove container
-    if [[ ! -f .disabled ]]; then
-      docker-compose --env-file .env -f docker-compose.yml down
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    docker-compose --env-file .env -f docker-compose.yml down
   }
 
   shutdown() {
-    # stop and remove container, clear volumes
-    if [[ ! -f .disabled ]]; then
-      docker-compose --env-file .env -f docker-compose.yml down -v
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    docker-compose --env-file .env -f docker-compose.yml down -v
   }
 
   backup() {
-    if [[ ! -f .disabled ]]; then
-      source .env
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" tar -czvf /opt/sonarqube/backup/sonarqube.tar.gz /opt/sonarqube/data /opt/sonarqube/extensions
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    source .env
+    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/tmp/backup "ubuntu" tar -czvf /tmp/backup/sonarqube.tar.gz /opt/sonarqube
   }
 
   restore() {
-    if [[ ! -f .disabled ]]; then
-      source .env
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
+    if [[ -f .disabled ]]; then
+      exit 0
     fi
+
+    stop
+    source .env
+    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
+    down
   }
 
   echo_help() {
@@ -73,7 +84,6 @@ cd ${BASEDIR}
 case "$1" in
     setup)
         # add rwx permissions for everyone to be able to generate backup file from inside docker container
-        chmod a+rwx ./backup
         ;;
     start)
 	start 

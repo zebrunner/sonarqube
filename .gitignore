@@ -1,2 +1,3 @@
+*.bak
 backup/*.tar.gz
 .disabled
