@@ -2,42 +2,42 @@
 
   start() {
     docker network inspect infra >/dev/null 2>&1 || docker network create infra
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      docker-compose --env-file ${BASEDIR}/.env -f ${BASEDIR}/docker-compose.yml up -d
+    if [[ ! -f .disabled ]]; then
+      docker-compose --env-file .env -f docker-compose.yml up -d
     fi
   }
 
   stop() {
     # stop and keep container
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      docker-compose --env-file ${BASEDIR}/.env -f ${BASEDIR}/docker-compose.yml stop
+    if [[ ! -f .disabled ]]; then
+      docker-compose --env-file .env -f docker-compose.yml stop
     fi
   }
 
   down() {
     # stop and remove container
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      docker-compose --env-file ${BASEDIR}/.env -f ${BASEDIR}/docker-compose.yml down
+    if [[ ! -f .disabled ]]; then
+      docker-compose --env-file .env -f docker-compose.yml down
     fi
   }
 
   shutdown() {
     # stop and remove container, clear volumes
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      docker-compose --env-file ${BASEDIR}/.env -f ${BASEDIR}/docker-compose.yml down -v
+    if [[ ! -f .disabled ]]; then
+      docker-compose --env-file .env -f docker-compose.yml down -v
     fi
   }
 
   backup() {
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      source ${BASEDIR}/.env
+    if [[ ! -f .disabled ]]; then
+      source .env
       docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" tar -czvf /opt/sonarqube/backup/sonarqube.tar.gz /opt/sonarqube/data /opt/sonarqube/extensions
     fi
   }
 
   restore() {
-    if [[ ! -f ${BASEDIR}/.disabled ]]; then
-      source ${BASEDIR}/.env
+    if [[ ! -f .disabled ]]; then
+      source .env
       docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
     fi
   }
@@ -62,7 +62,7 @@
   }
 
   status() {
-    source ${BASEDIR}/.env
+    source .env
     echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
   }
 
