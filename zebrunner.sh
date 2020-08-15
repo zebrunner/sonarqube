@@ -1,5 +1,18 @@
 #!/bin/bash
 
+  setup() {
+    # PREREQUISITES: valid values inside ZBR_PROTOCOL, ZBR_HOSTNAME and ZBR_PORT env vars!
+    echo "sonarqube: no setup steps required."
+  }
+
+  shutdown() {
+    if [[ -f .disabled ]]; then
+      exit 0
+    fi
+
+    docker-compose --env-file .env -f docker-compose.yml down -v
+  }
+
   start() {
     if [[ -f .disabled ]]; then
       exit 0
@@ -25,21 +38,12 @@
     docker-compose --env-file .env -f docker-compose.yml down
   }
 
-  shutdown() {
-    if [[ -f .disabled ]]; then
-      exit 0
-    fi
-
-    docker-compose --env-file .env -f docker-compose.yml down -v
-  }
-
   backup() {
     if [[ -f .disabled ]]; then
       exit 0
     fi
 
-    source .env
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/tmp/backup "ubuntu" tar -czvf /tmp/backup/sonarqube.tar.gz /opt/sonarqube
+    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
   }
 
   restore() {
@@ -48,28 +52,8 @@
     fi
 
     stop
-    source .env
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/opt/sonarqube/backup "zebrunner/sonarqube:${TAG_SONAR}" bash -c "cd / && tar -xzvf /opt/sonarqube/backup/sonarqube.tar.gz"
+    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
     down
-  }
-
-  echo_help() {
-    echo "
-      Usage: ./zebrunner.sh [option]
-
-      Flags:
-          --help | -h    Print help
-      Arguments:
-          start          Start container
-          stop           Stop and keep container
-          restart        Restart container
-          down           Stop and remove container
-          shutdown       Stop and remove container, clear volumes
-          backup         Backup container
-          restore        Restore container
-
-      For more help join telegram channel https://t.me/qps_infra"
-      exit 0
   }
 
   status() {
@@ -77,13 +61,41 @@
     echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
   }
 
+  echo_warning() {
+    echo "
+      WARNING! $1"
+  }
+
+  echo_telegram() {
+    echo "
+      For more help join telegram channel: https://t.me/zebrunner
+      "
+  }
+
+  echo_help() {
+    echo "
+      Usage: ./zebrunner.sh [option]
+      Flags:
+          --help | -h    Print help
+      Arguments:
+      	  start          Start container
+      	  stop           Stop and keep container
+          status         Show sonarqube container status
+      	  restart        Restart container
+      	  down           Stop and remove container
+      	  shutdown       Stop and remove container, clear volumes
+      	  backup         Backup container
+      	  restore        Restore container"
+      echo_telegram
+      exit 0
+  }
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd ${BASEDIR}
 
 case "$1" in
     setup)
-        # add rwx permissions for everyone to be able to generate backup file from inside docker container
+        setup
         ;;
     start)
 	start 
