@@ -54,6 +54,7 @@
     stop
     docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
     down
+    start
   }
 
   status() {
