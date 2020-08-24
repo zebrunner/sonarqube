@@ -1,5 +1,14 @@
 #!/bin/bash
 
+  is_container_exist() {
+    source .env
+    if [[ "$(docker ps -q -f status=running -f ancestor=zebrunner/sonarqube:${TAG_SONAR})" ]]; then
+      return 0
+    else
+      return 1
+    fi
+  }
+
   setup() {
     # PREREQUISITES: valid values inside ZBR_PROTOCOL, ZBR_HOSTNAME and ZBR_PORT env vars!
     echo "sonarqube: no setup steps required."
@@ -43,7 +52,13 @@
       exit 0
     fi
 
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
+    is_container_exist
+    if [[ $? == 0 ]]; then
+      echo "Backuping container..."
+      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
+    else
+      echo "There's no running Sonarqube container"
+    fi
   }
 
   restore() {
@@ -54,7 +69,6 @@
     stop
     docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
     down
-    start
   }
 
   status() {
