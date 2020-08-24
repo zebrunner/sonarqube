@@ -1,5 +1,10 @@
 #!/bin/bash
 
+  echo_warning() {
+    echo "
+      WARNING! $1"
+  }
+
   is_container_exist() {
     source .env
     if [[ "$(docker ps -q -f status=running -f ancestor=zebrunner/sonarqube:${TAG_SONAR})" ]]; then
@@ -57,7 +62,7 @@
       echo "Backuping container..."
       docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
     else
-      echo "There's no running Sonarqube container"
+      echo_warning "There's no running Sonarqube container"
     fi
   }
 
@@ -66,19 +71,20 @@
       exit 0
     fi
 
-    stop
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
-    down
+    is_container_exist
+    if [[ $? == 0 ]]; then
+      echo "Backuping container..."
+      stop
+      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
+      down
+    else
+      echo_warning "There's no running Sonarqube container"
+    fi
   }
 
   status() {
     source .env
     echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
-  }
-
-  echo_warning() {
-    echo "
-      WARNING! $1"
   }
 
   echo_telegram() {
