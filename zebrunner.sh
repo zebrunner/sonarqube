@@ -73,7 +73,7 @@
 
     is_container_exist
     if [[ $? == 0 ]]; then
-      echo "Backuping container..."
+      echo "Restoring container..."
       stop
       docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
       down
