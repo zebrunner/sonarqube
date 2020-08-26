@@ -1,8 +1,44 @@
 #!/bin/bash
 
+CONTAINER_NAME="sonarqube"
+
+  echo_warning() {
+    echo "
+      WARNING! $1"
+  }
+
+  echo_telegram() {
+    echo "
+      For more help join telegram channel: https://t.me/zebrunner
+      "
+  }
+
+  status() {
+    source .env
+    local container_status=$(docker inspect $CONTAINER_NAME -f {{.State.Health.Status}} 2> /dev/null)
+    if [[ -z "$container_status" ]]; then
+       echo_warning "There's no container $CONTAINER_NAME"
+       exit -1
+    fi
+
+    echo "$CONTAINER_NAME is $container_status"
+
+    case "$container_status" in
+        "healthy")
+            return 0
+            ;;
+        "unhealthy")
+            return 1
+            ;;
+        "starting")
+            return 2
+            ;;
+    esac
+  }
+
   setup() {
     # PREREQUISITES: valid values inside ZBR_PROTOCOL, ZBR_HOSTNAME and ZBR_PORT env vars!
-    echo "sonarqube: no setup steps required."
+    echo "$CONTAINER_NAME: no setup steps required."
   }
 
   shutdown() {
@@ -43,7 +79,14 @@
       exit 0
     fi
 
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
+    status
+    if [[ $? -ne -1 ]]; then
+      echo "Backup $CONTAINER_NAME container"
+      docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
+    else
+      echo_warning "Impossible backup $CONTAINER_NAME container!"
+      echo_telegram
+    fi
   }
 
   restore() {
@@ -51,25 +94,16 @@
       exit 0
     fi
 
-    stop
-    docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
-    down
-  }
-
-  status() {
-    source .env
-    echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
-  }
-
-  echo_warning() {
-    echo "
-      WARNING! $1"
-  }
-
-  echo_telegram() {
-    echo "
-      For more help join telegram channel: https://t.me/zebrunner
-      "
+    status
+    if [[ $? -ne -1 ]]; then
+      echo "Restore $CONTAINER_NAME container"
+      stop
+      docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
+      down
+    else
+      echo_warning "Impossible restore $CONTAINER_NAME container"
+      echo_telegram
+    fi
   }
 
   echo_help() {
@@ -80,7 +114,7 @@
       Arguments:
       	  start          Start container
       	  stop           Stop and keep container
-          status         Show sonarqube container status
+          status         Show $CONTAINER_NAME container status
       	  restart        Restart container
       	  down           Stop and remove container
       	  shutdown       Stop and remove container, clear volumes
