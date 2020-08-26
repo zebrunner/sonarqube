@@ -18,7 +18,7 @@ CONTAINER_NAME="sonarqube"
     local container_status=$(docker inspect $CONTAINER_NAME -f {{.State.Health.Status}} 2> /dev/null)
     if [[ -z "$container_status" ]]; then
        echo_warning "There's no container $CONTAINER_NAME"
-       exit 1
+       exit -1
     fi
 
     echo "$CONTAINER_NAME is $container_status"
@@ -80,7 +80,7 @@ CONTAINER_NAME="sonarqube"
     fi
 
     status
-    if [[ $? == 0 ]]; then
+    if [[ $? -ne -1 ]]; then
       echo "Backuping $CONTAINER_NAME container..."
       docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
     else
@@ -95,7 +95,7 @@ CONTAINER_NAME="sonarqube"
     fi
 
     status
-    if [[ $? == 0 ]]; then
+    if [[ $? -ne -1 ]]; then
       echo "Restoring $CONTAINER_NAME container..."
       stop
       docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
