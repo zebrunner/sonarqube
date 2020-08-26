@@ -14,8 +14,8 @@
   status() {
     source .env
     local container_name="sonarqube"
-    local container_status=`docker inspect $container_name -f {{.State.Health.Status}} > /dev/null 2>&1`
-    if [[ -z $container_status ]]; then
+    local container_status=$(docker inspect $container_name -f {{.State.Health.Status}} 2> /dev/null)
+    if [[ -z "$container_status" ]]; then
        echo_warning "There's no container $container_name"
        exit 1
     fi
@@ -27,7 +27,7 @@
             return 0
             ;;
         "unhealthy")
-            return 1 
+            return 1
             ;;
         "starting")
             return 2
