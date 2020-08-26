@@ -81,10 +81,10 @@ CONTAINER_NAME="sonarqube"
 
     status
     if [[ $? -ne -1 ]]; then
-      echo "Backuping $CONTAINER_NAME container..."
+      echo "Backup $CONTAINER_NAME container"
       docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
     else
-      echo_warning "There's no running $CONTAINER_NAME container"
+      echo_warning "Impossible backup $CONTAINER_NAME container!"
       echo_telegram
     fi
   }
@@ -96,12 +96,12 @@ CONTAINER_NAME="sonarqube"
 
     status
     if [[ $? -ne -1 ]]; then
-      echo "Restoring $CONTAINER_NAME container..."
+      echo "Restore $CONTAINER_NAME container"
       stop
       docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
       down
     else
-      echo_warning "There's no running $CONTAINER_NAME container"
+      echo_warning "Impossible restore $CONTAINER_NAME container"
       echo_telegram
     fi
   }
