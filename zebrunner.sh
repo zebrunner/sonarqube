@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONTAINER_NAME="sonarqube"
+
   echo_warning() {
     echo "
       WARNING! $1"
@@ -13,14 +15,13 @@
 
   status() {
     source .env
-    local container_name="sonarqube"
-    local container_status=$(docker inspect $container_name -f {{.State.Health.Status}} 2> /dev/null)
+    local container_status=$(docker inspect $CONTAINER_NAME -f {{.State.Health.Status}} 2> /dev/null)
     if [[ -z "$container_status" ]]; then
-       echo_warning "There's no container $container_name"
+       echo_warning "There's no container $CONTAINER_NAME"
        exit 1
     fi
 
-    echo "$container_name is $container_status"
+    echo "$CONTAINER_NAME is $container_status"
 
     case "$container_status" in
         "healthy")
@@ -37,7 +38,7 @@
 
   setup() {
     # PREREQUISITES: valid values inside ZBR_PROTOCOL, ZBR_HOSTNAME and ZBR_PORT env vars!
-    echo "sonarqube: no setup steps required."
+    echo "$CONTAINER_NAME: no setup steps required."
   }
 
   shutdown() {
@@ -80,10 +81,10 @@
 
     status
     if [[ $? == 0 ]]; then
-      echo "Backuping container..."
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
+      echo "Backuping $CONTAINER_NAME container..."
+      docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
     else
-      echo_warning "There's no running Sonarqube container"
+      echo_warning "There's no running $CONTAINER_NAME container"
       echo_telegram
     fi
   }
@@ -95,12 +96,12 @@
 
     status
     if [[ $? == 0 ]]; then
-      echo "Restoring container..."
+      echo "Restoring $CONTAINER_NAME container..."
       stop
-      docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
+      docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
       down
     else
-      echo_warning "There's no running Sonarqube container"
+      echo_warning "There's no running $CONTAINER_NAME container"
       echo_telegram
     fi
   }
@@ -113,7 +114,7 @@
       Arguments:
       	  start          Start container
       	  stop           Stop and keep container
-          status         Show sonarqube container status
+          status         Show $CONTAINER_NAME container status
       	  restart        Restart container
       	  down           Stop and remove container
       	  shutdown       Stop and remove container, clear volumes
