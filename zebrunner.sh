@@ -5,13 +5,34 @@
       WARNING! $1"
   }
 
-  is_container_exist() {
+  echo_telegram() {
+    echo "
+      For more help join telegram channel: https://t.me/zebrunner
+      "
+  }
+
+  status() {
     source .env
-    if [[ "$(docker ps -q -f status=running -f ancestor=zebrunner/sonarqube:${TAG_SONAR})" ]]; then
-      return 0
-    else
-      return 1
+    local container_name="sonarqube"
+    local container_status=`docker inspect $container_name -f {{.State.Health.Status}} > /dev/null 2>&1`
+    if [[ -z $container_status ]]; then
+       echo_warning "There's no container $container_name"
+       exit 1
     fi
+
+    echo "$container_name is $container_status"
+
+    case "$container_status" in
+        "healthy")
+            return 0
+            ;;
+        "unhealthy")
+            return 1 
+            ;;
+        "starting")
+            return 2
+            ;;
+    esac
   }
 
   setup() {
@@ -57,12 +78,13 @@
       exit 0
     fi
 
-    is_container_exist
+    status
     if [[ $? == 0 ]]; then
       echo "Backuping container..."
       docker run --rm --volumes-from sonarqube -v $(pwd)/backup:/var/backup "ubuntu" tar -czvf /var/backup/sonarqube.tar.gz /opt/sonarqube
     else
       echo_warning "There's no running Sonarqube container"
+      echo_telegram
     fi
   }
 
@@ -71,7 +93,7 @@
       exit 0
     fi
 
-    is_container_exist
+    status
     if [[ $? == 0 ]]; then
       echo "Restoring container..."
       stop
@@ -79,18 +101,8 @@
       down
     else
       echo_warning "There's no running Sonarqube container"
+      echo_telegram
     fi
-  }
-
-  status() {
-    source .env
-    echo "Sonar container status: " `docker ps -af "ancestor=zebrunner/sonarqube:${TAG_SONAR}" --format {{.Status}}`
-  }
-
-  echo_telegram() {
-    echo "
-      For more help join telegram channel: https://t.me/zebrunner
-      "
   }
 
   echo_help() {
