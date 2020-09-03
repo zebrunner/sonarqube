@@ -100,7 +100,6 @@ CONTAINER_NAME="sonarqube"
       stop
       docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd)/backup:/var/backup "ubuntu" bash -c "cd / && tar -xzvf /var/backup/sonarqube.tar.gz"
       down
-      start
     else
       echo_warning "Impossible restore $CONTAINER_NAME container"
       echo_telegram
