@@ -9,7 +9,7 @@ USER sonarqube
 
 RUN mkdir /opt/sonarqube/backup
 
-COPY plugins/ /opt/sonarqube/extensions/plugins/
-COPY plugins/ /opt/sonarqube/lib/common/
+COPY plugins/ /opt/sq/extensions/plugins/
+COPY plugins/ /opt/sq/lib/common/
 
 HEALTHCHECK CMD ["healthcheck"]
