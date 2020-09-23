@@ -107,8 +107,12 @@ CONTAINER_NAME="sonarqube"
   }
 
   version() {
-      source .env
-      echo "${TAG_SONAR}"
+    if [[ -f .disabled ]]; then
+      exit 0
+    fi
+    
+    source .env
+    echo "${TAG_SONAR}"
   }
 
   echo_help() {
