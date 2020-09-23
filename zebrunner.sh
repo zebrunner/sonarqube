@@ -112,7 +112,7 @@ CONTAINER_NAME="sonarqube"
     fi
     
     source .env
-    echo "Sonarqube - ${TAG_SONAR}"
+    echo "sonarqube - ${TAG_SONAR}"
   }
 
   echo_help() {
