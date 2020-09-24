@@ -106,6 +106,15 @@ CONTAINER_NAME="sonarqube"
     fi
   }
 
+  version() {
+    if [[ -f .disabled ]]; then
+      exit 0
+    fi
+    
+    source .env
+    echo "sonarqube: ${TAG_SONAR}"
+  }
+
   echo_help() {
     echo "
       Usage: ./zebrunner.sh [option]
@@ -119,7 +128,8 @@ CONTAINER_NAME="sonarqube"
       	  down           Stop and remove container
       	  shutdown       Stop and remove container, clear volumes
       	  backup         Backup container
-      	  restore        Restore container"
+      	  restore        Restore container
+      	  version        Version of container"
       echo_telegram
       exit 0
   }
@@ -155,6 +165,9 @@ case "$1" in
         ;;
     status)
         status
+        ;;
+    version)
+        version
         ;;
     --help | -h)
         echo_help
