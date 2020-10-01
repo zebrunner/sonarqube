@@ -37,8 +37,7 @@ CONTAINER_NAME="sonarqube"
   }
 
   setup() {
-    # PREREQUISITES: valid values inside ZBR_PROTOCOL, ZBR_HOSTNAME and ZBR_PORT env vars!
-    echo "$CONTAINER_NAME: no setup steps required."
+    echo
   }
 
   shutdown() {
