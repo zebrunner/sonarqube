@@ -7,4 +7,4 @@ Zebrunner SonarQube image is pre-configured SonarQube v7.9.3 with [community bra
 
 It is fully integrated into the Zebrunner Community Edition Server pipeline for Test Automation code inspection and user's guidelines.
 
-Detailed configuration steps can be found here: https://zebrunner.github.io/zebrunner/config-guide/#sonarqube-integration
+Detailed configuration steps can be found here: https://zebrunner.github.io/community-edition/config-guide/#sonarqube-integration
