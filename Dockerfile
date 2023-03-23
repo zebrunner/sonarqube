@@ -1,4 +1,4 @@
-FROM sonarqube:8.5-community
+FROM sonarqube:9.9.0-community
 
 USER root
 
