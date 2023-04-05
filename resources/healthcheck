@@ -5,6 +5,11 @@
 host="$(hostname -i || echo '127.0.0.1')"
 
 if wget -qO- http://${host}:9000/sonarqube/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"'; then
+	if [ -f /tmp/disable_auth.sh ]; then
+		#40: disable force authentication on first successful start
+		/tmp/disable_auth.sh
+		rm -f /tmp/disable_auth.sh
+	fi
 	exit 0
 fi
 
