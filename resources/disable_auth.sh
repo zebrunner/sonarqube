@@ -1,3 +1,3 @@
 #!/bin/bash
-wget -q --user=admin --password=admin "http://localhost:9000/api/settings/set?key=sonar.forceAuthentication&value=false"
+wget -q --post-data '' "http://admin:admin@localhost:9000/sonarqube/api/settings/set?key=sonar.forceAuthentication&value=false"
 
