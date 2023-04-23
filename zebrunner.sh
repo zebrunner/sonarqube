@@ -135,7 +135,7 @@ CONTAINER_NAME="sonarqube"
   }
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd ${BASEDIR} || exit
+cd "${BASEDIR}" || exit
 
 case "$1" in
     setup)
