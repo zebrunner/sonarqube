@@ -1,6 +1,6 @@
-FROM sonarqube:9.5.0-community
+FROM sonarqube:9.8.0-community
 
-ARG BRANCH_PLUGIN_VERSION=1.12.0
+ARG BRANCH_PLUGIN_VERSION=1.14.0
 
 USER root
 
@@ -35,7 +35,5 @@ RUN chmod +w /opt/sonarqube/conf/sonar.properties && \
   echo "sonar.ce.javaAdditionalOpts=-javaagent:./extensions/plugins/sonarqube-community-branch-plugin-${BRANCH_PLUGIN_VERSION}.jar=ce" >> /opt/sonarqube/conf/sonar.properties && \
   chmod -w /opt/sonarqube/conf/sonar.properties
 
-
-COPY resources/disable_auth.sh /tmp/
 
 HEALTHCHECK CMD ["healthcheck"]
