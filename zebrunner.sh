@@ -46,7 +46,7 @@ CONTAINER_NAME="sonarqube"
       exit 0 #no need to proceed as nothing was configured
     fi
 
-    docker-compose --env-file .env -f docker-compose.yml down -v
+    docker compose down -v
   }
 
   start() {
@@ -55,7 +55,7 @@ CONTAINER_NAME="sonarqube"
     fi
 
     docker network inspect infra >/dev/null 2>&1 || docker network create infra
-    docker-compose --env-file .env -f docker-compose.yml up -d
+    docker compose up -d
   }
 
   stop() {
@@ -63,7 +63,7 @@ CONTAINER_NAME="sonarqube"
       exit 0
     fi
 
-    docker-compose --env-file .env -f docker-compose.yml stop
+    docker compose stop
   }
 
   down() {
@@ -71,7 +71,7 @@ CONTAINER_NAME="sonarqube"
       exit 0
     fi
 
-    docker-compose --env-file .env -f docker-compose.yml down
+    docker compose down
   }
 
   backup() {
